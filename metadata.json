@@ -1,0 +1,6 @@
+{
+  "name": "MoneySwap",
+  "description": "A luxury payment gateway interface for MoneySwap. Transfer between UPI and Cash with ease.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
