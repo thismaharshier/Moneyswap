@@ -759,8 +759,15 @@ export default function App() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="flex flex-col items-center py-6 space-y-8"
               >
-                <div className="w-20 h-20 rounded-full bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/30 shadow-[0_0_30px_rgba(212,175,55,0.15)]">
-                  <Check className="w-10 h-10 text-[#D4AF37]" />
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/30 shadow-[0_0_30px_rgba(212,175,55,0.15)] relative z-10">
+                    <Check className="w-10 h-10 text-[#D4AF37]" />
+                  </div>
+                  <motion.div 
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="absolute inset-0 rounded-full bg-[#D4AF37]/5 blur-xl"
+                  />
                 </div>
                 
                 <div className="text-center space-y-2">
@@ -768,18 +775,47 @@ export default function App() {
                   <p className="text-[9px] uppercase tracking-[0.3em] text-[var(--muted-text)]">Transaction {history[0]?.id}</p>
                 </div>
 
-                <div className="w-full bg-black/30 rounded-2xl border border-[var(--border-color)] p-6 space-y-4">
-                  <div className="flex justify-between text-[10px] uppercase tracking-widest text-[var(--muted-text)]">
-                    <span>Order Date</span>
-                    <span className="text-[var(--text-color)]">{history[0]?.date.split(',')[0]}</span>
+                {/* Receiver Info Section */}
+                <div className="w-full bg-black/40 rounded-3xl border border-[#D4AF37]/20 p-6 space-y-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <ShieldCheck className="w-16 h-16 text-[#D4AF37]" />
                   </div>
-                  <div className="flex justify-between text-[10px] uppercase tracking-widest text-[var(--muted-text)]">
-                    <span>Account Name</span>
-                    <span className="text-[var(--text-color)]">{fullName}</span>
+                  
+                  <div className="flex items-center space-x-4 relative z-10">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-black p-[1px] shadow-lg">
+                      <div className="w-full h-full bg-[#111] rounded-2xl overflow-hidden flex items-center justify-center">
+                        <img 
+                          src="https://raw.githubusercontent.com/thismaharshier/netha/main/IMG_20260314_103050.jpg" 
+                          alt="Company Representative" 
+                          className="w-full h-full object-cover opacity-80"
+                        />
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[8px] uppercase tracking-widest text-[#D4AF37] mb-0.5">Receiver / Agent</p>
+                      <p className="text-sm font-medium text-[var(--text-color)]">K. Upendra Devi</p>
+                      <div className="flex flex-col mt-1 space-y-0.5">
+                        <div className="flex items-center text-[9px] text-[var(--muted-text)]">
+                          <Phone className="w-2.5 h-2.5 mr-1 text-[#D4AF37]/60" />
+                          <span>+91 93926 73014</span>
+                        </div>
+                        <div className="flex items-center text-[9px] text-[var(--muted-text)]">
+                          <Mail className="w-2.5 h-2.5 mr-1 text-[#D4AF37]/60" />
+                          <span className="lowercase">support@moneyswap.live</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-lg font-light text-[var(--text-color)] pt-3 border-t border-white/5">
-                    <span className="text-[10px] uppercase tracking-widest font-semibold text-[#D4AF37]">Total Value</span>
-                    <span>₹{history[0]?.totalWithFee.toLocaleString('en-IN')}</span>
+
+                  <div className="space-y-3 pt-4 border-t border-white/5">
+                    <div className="flex justify-between text-[10px] uppercase tracking-widest text-[var(--muted-text)]">
+                      <span>Sender Account</span>
+                      <span className="text-[var(--text-color)]">{fullName}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px] uppercase tracking-widest text-[var(--muted-text)]">
+                      <span>Total Value Sent</span>
+                      <span className="text-[#D4AF37] font-mono">₹{history[0]?.totalWithFee.toLocaleString('en-IN')}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -789,12 +825,6 @@ export default function App() {
                     className="w-full py-4 bg-[#D4AF37] text-black rounded-xl text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-white transition-all shadow-xl"
                   >
                     New Transaction
-                  </button>
-                  <button
-                    onClick={() => { setShowHistory(true); }}
-                    className="w-full py-3 bg-transparent text-[var(--muted-text)] text-[9px] uppercase tracking-[0.3em] font-medium hover:text-[#D4AF37] transition-colors"
-                  >
-                    View Ledger History
                   </button>
                 </div>
               </motion.div>
