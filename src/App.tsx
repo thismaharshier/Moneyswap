@@ -1,7 +1,9 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { QrCode, Banknote, Check, ArrowRightLeft, ShieldCheck, ChevronRight, ChevronLeft, Upload, X, Phone, User, Mail, Sun, Moon, MapPin } from 'lucide-react';
+import { QrCode, Banknote, Check, ArrowRightLeft, ShieldCheck, ChevronRight, ChevronLeft, Upload, X, Phone, User, Mail, Sun, Moon, MapPin, ShieldAlert } from 'lucide-react';
 import { cn } from './lib/utils';
+import AdminLogin from './components/admin/AdminLogin';
+import AdminPanel from './components/admin/AdminPanel';
 
 type TransactionMode = 'upi-to-cash' | 'cash-to-upi';
 type AppState = 'auth-email' | 'auth-otp' | 'profile' | 'idle' | 'payment' | 'processing' | 'success';
@@ -15,6 +17,19 @@ type TransactionRecord = {
 };
 
 export default function App() {
+  const [isAdminMode, setIsAdminMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname === '/admin';
+    }
+    return false;
+  });
+  const [adminToken, setAdminToken] = useState<string | null>(() => {
+     if (typeof window !== 'undefined') {
+       return localStorage.getItem('adminToken');
+     }
+     return null;
+  });
+
   const [mode, setMode] = useState<TransactionMode>('upi-to-cash');
   const [amount, setAmount] = useState('');
   const [appState, setAppState] = useState<AppState>('auth-email');
@@ -37,6 +52,7 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
@@ -86,8 +102,32 @@ export default function App() {
   const handleProfileSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    // Simulate API call and sync with backend
+    setTimeout(async () => {
+      try {
+        const syncRes = await fetch('/api/users/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName,
+            phoneNumber,
+            rollNumber,
+            department,
+            email
+          })
+        });
+
+        // Record tracking login
+        await fetch('/api/users/login-track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: email })
+        });
+
+      } catch (err) {
+        console.error("Sync failed", err);
+      }
       setIsSubmitting(false);
       setAppState('idle');
     }, 1500);
@@ -132,7 +172,24 @@ export default function App() {
     }, 2500);
   };
 
-  const completeTransaction = () => {
+  const completeTransaction = async () => {
+    const record = {
+      type: mode,
+      amount: parseInt(amount),
+      totalWithFee: Math.ceil(parseInt(amount) * 1.05),
+      userName: fullName
+    };
+
+    try {
+      await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+      });
+    } catch (err) {
+      console.error("Transaction sync failed", err);
+    }
+
     const newRecord: TransactionRecord = {
       id: Math.random().toString(36).substr(2, 9).toUpperCase(),
       type: mode,
@@ -161,8 +218,31 @@ export default function App() {
     setReceiptImage(null);
   };
 
+  if (isAdminMode) {
+    if (!adminToken) {
+      return <AdminLogin onLogin={(token) => setAdminToken(token)} />;
+    }
+    return <AdminPanel onLogout={() => {
+      localStorage.removeItem('adminToken');
+      setAdminToken(null);
+      setIsAdminMode(false);
+      window.history.pushState({}, '', '/');
+    }} />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-color)] text-[var(--text-color)] font-sans transition-colors duration-300">
+      {/* Hidden Admin Access */}
+      <button 
+        onClick={() => {
+          setIsAdminMode(true);
+          window.history.pushState({}, '', '/admin');
+        }}
+        className="fixed bottom-4 right-4 w-8 h-8 rounded-full border border-white/5 flex items-center justify-center text-[8px] text-white/5 hover:text-[#D4AF37] hover:border-[#D4AF37]/20 transition-all opacity-0 hover:opacity-100 z-[9999]"
+      >
+        REV
+      </button>
+
       <div className="relative z-10 w-full max-w-md">
         {/* Header / Branding */}
         <header className="flex flex-col items-center border-b border-[var(--border-color)] pb-6 mb-8 text-center relative">
@@ -241,6 +321,22 @@ export default function App() {
                             <ArrowRightLeft className="w-4 h-4 group-hover:rotate-180 transition-transform" />
                             <span className="text-[9px] uppercase tracking-[0.2em] font-semibold">History</span>
                           </button>
+                          <a 
+                            href="https://wa.me/919392673014"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[var(--muted-text)] hover:text-[#25D366] hover:bg-[#25D366]/5 transition-all text-left group"
+                          >
+                            <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="text-[9px] uppercase tracking-[0.2em] font-semibold">WhatsApp Support</span>
+                          </a>
+                          <a 
+                            href="mailto:thismaharshier@gmail.com"
+                            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[var(--muted-text)] hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all text-left group"
+                          >
+                            <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="text-[9px] uppercase tracking-[0.2em] font-semibold">Contact Gmail</span>
+                          </a>
                           <button 
                             onClick={signOut}
                             className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[var(--muted-text)] hover:text-red-400 hover:bg-red-400/5 transition-all text-left group"
@@ -833,14 +929,37 @@ export default function App() {
         </div>
 
         {/* Footer info */}
-        <footer className="mt-8 flex items-center justify-center space-x-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span className="text-[8px] uppercase tracking-widest">Encrypted</span>
+        <footer className="mt-8 flex flex-col items-center space-y-6">
+          <div className="flex items-center justify-center space-x-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span className="text-[8px] uppercase tracking-widest">Encrypted</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <QrCode className="w-3.5 h-3.5" />
+              <span className="text-[8px] uppercase tracking-widest">Instant Settlement</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <QrCode className="w-3.5 h-3.5" />
-            <span className="text-[8px] uppercase tracking-widest">Instant Settlement</span>
+          
+          <div className="flex flex-col items-center space-y-3 pt-4 border-t border-[var(--border-color)]/20 w-full max-w-[200px]">
+            <p className="text-[7px] uppercase tracking-[0.4em] text-[var(--muted-text)] mb-1">Contact Concierge</p>
+            <div className="flex space-x-4">
+              <a 
+                href="https://wa.me/919392673014" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 rounded-full bg-black border border-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all shadow-md active:scale-95 group"
+              >
+                <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              </a>
+              <a 
+                href="mailto:thismaharshier@gmail.com"
+                className="p-3 rounded-full bg-black border border-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all shadow-md active:scale-95 group"
+              >
+                <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              </a>
+            </div>
+            <p className="text-[8px] font-mono text-[var(--muted-text)] lowercase tracking-widest">thismaharshier@gmail.com</p>
           </div>
         </footer>
 
