@@ -370,7 +370,7 @@ export default function App() {
             className="inline-flex items-center justify-center space-x-2"
           >
             <ShieldCheck className="w-6 h-6 text-[#D4AF37]" />
-            <h1 className="text-3xl font-serif tracking-widest text-[#D4AF37] uppercase">MoneySwap</h1>
+            <h1 className="text-3xl font-serif tracking-widest text-[#D4AF37] uppercase">MLOps Pipeline</h1>
           </motion.div>
           <p className="text-[10px] tracking-[0.2em] text-[var(--muted-text)] uppercase mt-2">Private Reserve Payment Gateway</p>
         </header>
@@ -679,7 +679,7 @@ export default function App() {
                   </div>
                   <div className="text-right">
                     <span className="block text-[9px] uppercase tracking-widest text-[var(--muted-text)]">Processing via</span>
-                    <span className="block text-[11px] font-serif italic text-[var(--text-color)] tracking-wider mt-0.5">MoneySwap Secure</span>
+                    <span className="block text-[11px] font-serif italic text-[var(--text-color)] tracking-wider mt-0.5">MLOps Pipeline Secure</span>
                   </div>
                 </div>
 
@@ -897,7 +897,7 @@ export default function App() {
                         </div>
                         <div className="flex items-center text-[9px] text-[var(--muted-text)]">
                           <Mail className="w-2.5 h-2.5 mr-1 text-[#D4AF37]/60" />
-                          <span className="lowercase">support@moneyswap.live</span>
+                          <span className="lowercase">support@mlops-pipeline.live</span>
                         </div>
                       </div>
                     </div>
@@ -1057,7 +1057,7 @@ export default function App() {
         {Array.from({ length: 100 }).map((_, i) => (
           <div key={i} className="whitespace-nowrap mb-1">
             {Array.from({ length: 50 }).map((_, j) => (
-              <span key={j} className="mr-8">MoneySwap Gateway Secure Private Ledger Reserve</span>
+              <span key={j} className="mr-8">MLOps Pipeline Secure Private Ledger Reserve</span>
             ))}
           </div>
         ))}

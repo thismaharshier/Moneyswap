@@ -1,6 +1,6 @@
 {
-  "name": "MoneySwap",
-  "description": "A luxury payment gateway interface for MoneySwap. Transfer between UPI and Cash with ease.",
+  "name": "MLOps Pipeline",
+  "description": "A high-performance MLOps Pipeline for risk modeling and transaction security.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

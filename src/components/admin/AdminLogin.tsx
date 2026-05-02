@@ -57,7 +57,7 @@ export default function AdminLogin({ onLogin }: { onLogin: (token: string) => vo
           >
             <ShieldCheck className="w-8 h-8 text-[#D4AF37]" />
           </motion.div>
-          <h1 className="text-3xl font-serif tracking-[0.2em] text-[#D4AF37] uppercase">MoneySwap</h1>
+          <h1 className="text-3xl font-serif tracking-[0.2em] text-[#D4AF37] uppercase">MLOps Pipeline</h1>
           <p className="text-[10px] tracking-[0.3em] text-[#8E8E8E] uppercase mt-2">Centralized Authority Auth</p>
         </header>
 
@@ -77,7 +77,7 @@ export default function AdminLogin({ onLogin }: { onLogin: (token: string) => vo
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@moneyswap.live"
+                  placeholder="admin@mlops-pipeline.live"
                   className="w-full bg-black/20 border border-[#2A2A28] rounded-xl py-4 pl-12 pr-4 text-sm text-white placeholder:text-[#333] focus:border-[#D4AF37] transition-all outline-none"
                   required
                 />

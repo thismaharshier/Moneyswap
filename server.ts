@@ -48,7 +48,7 @@ function getDB(): DB {
     const initialDB: DB = {
       admins: [
         { 
-          email: "admin@moneyswap.live", 
+          email: "admin@mlops-pipeline.live", 
           passwordHash: bcrypt.hashSync("admin123", 10) 
         }
       ],
@@ -240,7 +240,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`MoneySwap Server running on http://localhost:${PORT}`);
+    console.log(`MLOps Pipeline Server running on http://localhost:${PORT}`);
   });
 }
 

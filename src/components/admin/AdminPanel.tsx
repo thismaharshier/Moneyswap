@@ -14,11 +14,15 @@ import {
   TrendingUp,
   UserPlus,
   CreditCard,
-  Bell
+  Bell,
+  Terminal,
+  Activity,
+  Cpu,
+  Globe
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-type AdminView = 'dashboard' | 'users' | 'transactions' | 'settings';
+type AdminView = 'dashboard' | 'users' | 'transactions' | 'settings' | 'mlops';
 
 export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [view, setView] = useState<AdminView>('dashboard');
@@ -84,6 +88,7 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'transactions', label: 'Transactions', icon: ArrowRightLeft },
+    { id: 'mlops', label: 'MLOps Pipeline', icon: Terminal },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -386,6 +391,77 @@ export default function AdminPanel({ onLogout }: { onLogout: () => void }) {
                  </tbody>
                </table>
              </motion.div>
+          )}
+
+          {view === 'mlops' && (
+            <motion.div
+              key="mlops"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8"
+            >
+              <div className="grid grid-cols-3 gap-6">
+                 <div className="p-6 bg-[#111112] border border-[#2A2A28] rounded-2xl">
+                    <Activity className="w-6 h-6 text-[#D4AF37] mb-4" />
+                    <p className="text-[10px] uppercase tracking-widest text-[#8E8E8E]">Model Status</p>
+                    <h5 className="text-xl font-serif italic text-green-400 mt-1">Steady State</h5>
+                 </div>
+                 <div className="p-6 bg-[#111112] border border-[#2A2A28] rounded-2xl">
+                    <Cpu className="w-6 h-6 text-[#D4AF37] mb-4" />
+                    <p className="text-[10px] uppercase tracking-widest text-[#8E8E8E]">Inference Load</p>
+                    <h5 className="text-xl font-serif italic text-white mt-1">0.4ms Latency</h5>
+                 </div>
+                 <div className="p-6 bg-[#111112] border border-[#2A2A28] rounded-2xl">
+                    <Globe className="w-6 h-6 text-[#D4AF37] mb-4" />
+                    <p className="text-[10px] uppercase tracking-widest text-[#8E8E8E]">Training Nodes</p>
+                    <h5 className="text-xl font-serif italic text-white mt-1">4 Active GPUs</h5>
+                 </div>
+              </div>
+
+              <div className="bg-[#111112] border border-[#2A2A28] rounded-3xl p-8">
+                <div className="flex justify-between items-center mb-8">
+                   <h4 className="text-xl font-serif italic">MLOps Training History</h4>
+                   <span className="px-3 py-1 bg-[#D4AF37]/10 text-[#D4AF37] text-[9px] uppercase tracking-widest border border-[#D4AF37]/20 rounded-full">Pipeline Active</span>
+                </div>
+                <div className="space-y-4">
+                   {[
+                     { stage: 'Risk Model Re-train', status: 'Success', version: 'v2.4.1-ml', time: '2h ago' },
+                     { stage: 'Fraud Detection Sync', status: 'Success', version: 'v2.4.0-ml', time: '5h ago' },
+                     { stage: 'Anomaly Weights Update', status: 'Warning', version: 'v2.3.9-ml', time: '1d ago' },
+                   ].map((pipe, i) => (
+                     <div key={i} className="flex items-center justify-between p-4 bg-black/30 border border-[#2A2A28] rounded-xl group hover:border-[#D4AF37]/30 transition-all">
+                        <div className="flex items-center space-x-4">
+                           <div className={cn("w-2 h-2 rounded-full", pipe.status === 'Success' ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'bg-orange-500')}></div>
+                           <div>
+                              <p className="text-xs font-bold text-white uppercase tracking-wider">{pipe.stage}</p>
+                              <p className="text-[9px] text-[#8E8E8E]">{pipe.version}</p>
+                           </div>
+                        </div>
+                        <span className="text-[9px] uppercase tracking-widest text-[#8E8E8E]">{pipe.time}</span>
+                     </div>
+                   ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-black/40 border border-[#2A2A28] rounded-2xl p-6 font-mono text-[10px] text-[#8E8E8E] space-y-2 overflow-hidden h-48 relative">
+                   <div className="absolute top-0 right-0 p-3"><Terminal className="w-4 h-4 opacity-20" /></div>
+                   <p className="text-[#D4AF37]">$ kubectl get pods -n ml-pipeline</p>
+                   <p>&gt; risk-inference-01: Running</p>
+                   <p>&gt; training-job-k8s: Completed</p>
+                   <p>&gt; monitoring-sidecar: Running</p>
+                   <p className="animate-pulse">_</p>
+                </div>
+                <div className="bg-black/40 border border-[#2A2A28] rounded-2xl p-6 font-mono text-[10px] text-[#8E8E8E] space-y-2 overflow-hidden h-48 relative">
+                   <div className="absolute top-0 right-0 p-3"><Activity className="w-4 h-4 opacity-20" /></div>
+                   <p className="text-[#D4AF37]">$ cat logs/training.log</p>
+                   <p>[INFO] Epoch 45: Loss 0.0023</p>
+                   <p>[INFO] Validation Accuracy: 99.8%</p>
+                   <p>[SUCCESS] Model weights exported to S3.</p>
+                   <p className="animate-pulse">_</p>
+                </div>
+              </div>
+            </motion.div>
           )}
 
           {view === 'settings' && (
